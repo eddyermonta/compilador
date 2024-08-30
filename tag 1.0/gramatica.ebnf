@@ -1,0 +1,144 @@
+program ::= decl+
+
+decl ::= var_decl                  // Declaración de variables
+        | func_decl                // Declaración de funciones
+        | class_decl               // Declaración de clases
+
+class_decl ::= 'Class' class_name inheritance_clause? '{' class_body '}' ';'
+    // Definición de una clase, opcionalmente con herencia
+
+inheritance_clause ::= ':' access_specifier? base_class
+    // Clausula de herencia, especifica la clase base opcionalmente con un especificador de acceso
+base_class ::= 'IDENT'
+    // Clase base para herencia
+
+class_name ::= 'IDENT'
+    // Nombre de la clase
+
+class_body ::= (var_decl
+                | func_decl
+                | constructor_decl(class_name)
+                | destructor_decl
+                | access_specifier ':'
+                )*
+    // Cuerpo de la clase que puede incluir variables, funciones, constructores, destructores y especificadores de acceso
+
+access_specifier ::= 'PUBLIC'
+                |'PRIVATE'
+                |'PROTECTED'
+    // Especificador de acceso: público, privado o protegido
+
+constructor_decl ::= class_name '(' params ')' base_initializer? constructor_body
+    // Declaración del constructor, opcionalmente con inicializador de base
+base_initializer ::= ':' base_class '(' args ')'
+    // Inicializador de base para el constructor
+constructor_body ::= '{' constructor_stmt_list '}'
+    // Cuerpo del constructor
+constructor_stmt_list ::= constructor_stmt*
+    // Lista de declaraciones en el cuerpo del constructor
+constructor_stmt ::= this_assign_stmt
+                   | stmt
+    // Declaraciones dentro del constructor
+this_assign_stmt ::= 'THIS' '.' 'IDENT' '=' 'IDENT' ';'
+    // Asignación en el constructor usando `this` para referirse al objeto actual
+
+destructor_decl ::= '~' class_name '(' ')' destructor_body
+    // Declaración del destructor
+destructor_body ::= '{' destructor_stmt_list '}'
+    // Cuerpo del destructor
+destructor_stmt_list ::= destructor_stmt*
+    // Lista de declaraciones en el cuerpo del destructor
+destructor_stmt ::= stmt
+    // Declaraciones dentro del destructor
+
+var_decl ::= type_spec 'IDENT' ';'
+            | type_spec 'IDENT' '[' ']' ';'
+    // Declaraciones de variables con tipos básicos y estructuras de arreglo
+
+type_spec ::= 'VOID'          // Tipo vacío, sin valor
+            | 'BOOL'          // Tipo booleano (true o false)
+            | 'CHAR'          // Tipo carácter (un solo carácter)
+            | 'INT'           // Tipo entero
+            | 'FLOAT'         // Tipo de punto flotante
+            | 'DOUBLE'        // Tipo de punto flotante doble precisión
+            | 'LONG'          // Tipo entero largo
+            | 'SHORT'         // Tipo entero corto
+            | 'SIGNED'        // Tipo entero con signo (predeterminado para int)
+            | 'UNSIGNED'      // Tipo entero sin signo
+            | 'STRING'        // Tipo cadena (de caracteres)
+            | 'IDENT'         // Para tipos definidos por el usuario (clases, structs)
+            | 'TYPEDEF'       // Alias de tipo definido con 'typedef'
+
+func_decl ::= type_spec 'IDENT' '(' params ')' const_qualifier? compound_stmt
+    // Declaración de funciones con tipo de retorno, nombre, parámetros, y opcionalmente calificadores de const
+const_qualifier ::= 'CONST'?
+    // Calificador opcional que indica que la función no modifica el estado del objeto
+
+params ::= param_list
+            | 'VOID'
+    // Parámetros de la función, o ausencia de parámetros
+param_list ::= param (',' param)*
+    // Lista de parámetros separados por comas
+param ::= type_spec 'IDENT'
+        | type_spec 'IDENT' '[' ']'
+    // Declaración de parámetros, que pueden ser tipos básicos con o sin arreglos
+
+compound_stmt ::= '{' local_decls stmt_list '}'
+    // Declaración compuesta que contiene declaraciones locales y lista de sentencias
+local_decls ::= local_decl*
+    // Declaraciones locales dentro de un bloque de código
+local_decl ::= type_spec 'IDENT' ';'
+            | type_spec 'IDENT' '[' ']' ';'
+    // Declaraciones locales de variables con tipos básicos y estructuras de arreglo
+
+stmt_list ::= stmt*
+    // Lista de sentencias dentro de un bloque de código
+stmt ::= expr_stmt
+        | compound_stmt
+        | if_stmt
+        | while_stmt
+        | return_stmt
+        | break_stmt
+    // Diferentes tipos de sentencias que pueden aparecer en un bloque de código
+
+expr_stmt ::= expr? ';'
+    // Sentencia de expresión opcionalmente seguida de un punto y coma
+if_stmt ::= 'IF' '(' expr ')' stmt ('ELSE' stmt)?
+    // Sentencia condicional if, opcionalmente seguida de una cláusula else
+while_stmt ::= 'WHILE' '(' expr ')' stmt
+    // Sentencia de bucle while
+return_stmt ::= 'RETURN' expr? ';'
+    // Sentencia de retorno que opcionalmente incluye una expresión
+break_stmt ::= ('BREAK' | 'CONTINUE') ';'
+    // Sentencia de interrupción del bucle o de continuación al siguiente ciclo
+
+expr ::= 'IDENT' '=' expr
+    | 'IDENT' '[' expr ']' '=' expr
+    | expr 'OR' expr
+    | expr 'AND' expr
+    | expr 'EQ' expr
+    | expr 'NE' expr
+    | expr '+' expr
+    | expr '-' expr
+    | expr '*' expr
+    | expr '/' expr
+    | expr '%' expr
+    | '!' expr
+    | '-' expr
+    | '+' expr
+    | '(' expr ')'
+    | 'IDENT'
+    | 'IDENT' '[' expr ']'
+    | 'IDENT' '(' args ')'
+    | 'IDENT' '.' size
+    | 'BOOL_LIT'
+    | 'INT_LIT'
+    | 'FLOAT_LIT'
+    | 'NEW' type_spec '[' expr ']'
+    // Expresiones que incluyen asignación, operaciones aritméticas y lógicas, llamadas a funciones, etc.
+
+args ::= arg_list?
+    // Lista de argumentos para llamadas a funciones, opcionalmente vacía
+arg_list ::= expr (',' expr)*
+    // Lista de argumentos separados por comas
+|
