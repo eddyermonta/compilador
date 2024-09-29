@@ -1,7 +1,6 @@
 import sly
 from rich import print
 from sly import Lexer
-
 class MyLexer(Lexer):
     tokens = {
         # Clases y modificadores de acceso
@@ -104,32 +103,43 @@ class MyLexer(Lexer):
         self.index += 1
 
 if __name__ == '__main__':
+    from rich.table   import Table
+    from rich.console import Console
+
+    table = Table(title='Análisis Léxico')
+    table.add_column('type')
+    table.add_column('value')
+    table.add_column('lineno', justify='right')
+
     lexer = MyLexer()
     data = '''
-       // Esto es un comentario de una línea
+    // Esto es un comentario de una línea
 
-/* Este es un comentario
-de múltiples líneas */
+    /* Este es un comentario
+    de múltiples líneas */
 
-class Test {
-    public int size = 10;
-    private bool flag = false;
-    float ratio = 3.14;
-    int[] array = new {1, 2, 3, 4, 5};
-    string greeting = "Hello, world!";
-    void method() {
-        if (size >= 10 && flag) {
-            return;
-        } else {
-            flag = true;
-        }
+    class Test {
+        public int size = 10;
+        private bool flag = false;
+        float ratio = 3.14;
+        int[] array = new {1, 2, 3, 4, 5};
+        string greeting = "Hello, world!";
+        void method() {
+            if (size >= 10 && flag) {
+                return;
+            } else {
+                flag = true;
+            }
 
-        while (size > 0) {
-            size--;
+            while (size > 0) {
+                size--;
+            }
         }
     }
-}
 
     '''
     for tok in lexer.tokenize(data):
-        print(tok)
+        value = tok.value if isinstance(tok.value, str) else str(tok.value)
+        table.add_row(tok.type, value, str(tok.lineno))
+    console = Console()
+    console.print(table)
