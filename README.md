@@ -18,9 +18,9 @@ Los siguientes tipos de tokens son reconocidos:
 
 - **Clases y Modificadores de Acceso**: `CLASS`, `PUBLIC`, `PRIVATE`, `PROTECTED`
 - **Sentencias de Control**: `RETURN`, `BREAK`, `CONTINUE`, `IF`, `WHILE`, `ELSE`, `NEW`
-- **Tipos de Datos**: `VOID`, `BOOL`, `INT`, `FLOAT`
+- **Tipos de Datos**: `VOID`, `BOOL`, `INT`, `FLOAT`,  `STRING`,
 - **Operadores Relacionales y Lógicos**: `AND`, `OR`, `EQ`, `NE`, `LE`, `GE`
-- **Identificadores y Literales**: `IDENT`, `BOOL_LIT`, `INT_LIT`, `FLOAT_LIT`
+- **Identificadores y Literales**: `IDENT`, `BOOL_LIT`, `INT_LIT`, `FLOAT_LIT` `STRING_LIT`,
 - **Palabras Reservadas**: `THIS`, `SIZE`
 
 ## Instalación
