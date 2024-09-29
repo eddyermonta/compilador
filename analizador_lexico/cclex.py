@@ -15,7 +15,7 @@ class MyLexer(Lexer):
         # Operadores relacionales y lógicos
         'AND', 'OR', 'EQ', 'NE', 'LE', 'GE','GT','LT',
         # Identificadores y literales
-        'IDENT', 'BOOL_LIT', 'INT_LIT', 'FLOAT_LIT',
+        'IDENT', 'BOOL_LIT', 'INT_LIT', 'FLOAT_LIT', 'STRING_LIT',
         # Palabras reservadas
         'THIS', 'SIZE'
     }
@@ -27,9 +27,9 @@ class MyLexer(Lexer):
     ignore = ' \t'
     # Ignorar saltos de línea
     ignore_newline = r'\n+'
-    # Ignorar comentarios estilo C++ (// comentario)
+    # Ignorar comentarios (// comentario)
     ignore_cpp_comments = r'//.*'
-    # Ignorar comentarios estilo C (/* comentario */)
+    # Ignorar comentarios estilo (/* comentario */)
     ignore_c_comments = r'/\*(.|\n)*?\*/'
 
     # Definición de tokens
@@ -74,6 +74,12 @@ class MyLexer(Lexer):
         t.type = self.keywords.get(t.value, 'IDENT')  # Verifica si el identificador es una palabra clave
         return t
 
+    # Reconocimiento de cadenas (strings)
+    @_(r'"([^"\\]|\\.)*"')  # Reconocimiento de cadenas (strings)
+    def STRING_LIT(self, t):
+        t.value = t.value[1:-1]  # Eliminar las comillas
+        return t
+
     # Literales de enteros (ejemplo: 123)
     @_(r'\d+')
     def t_INT_LIT(self, t):
@@ -110,7 +116,7 @@ class Test {
     private bool flag = false;
     float ratio = 3.14;
     int[] array = new {1, 2, 3, 4, 5};
-
+    string greeting = "Hello, world!";
     void method() {
         if (size >= 10 && flag) {
             return;
