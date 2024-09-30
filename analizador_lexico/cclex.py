@@ -108,7 +108,10 @@ class MyLexer(Lexer):
 
     # Manejo de caracteres ilegales
     def t_error(self, t):
-        print(f"Carácter ilegal '{t.value[0]}' en la línea {t.lineno}, columna {self.index}")
+        # Puedes personalizar el mensaje de error aquí
+        expected_tokens = ", ".join(self.tokens)
+        print(f"Error: Carácter ilegal '{t.value[0]}' en la línea {t.lineno}, columna {self.index}.")
+        print(f"Tokens esperados: {expected_tokens}")
         self.index += 1
 
 
@@ -130,19 +133,19 @@ if __name__ == '__main__':
 
     class Test {
         public int size = 10;
-        private bool flag = false;
-        float ratio = 3.14;
-        int[] array = new {1, 2, 3, 4, 5};
-        string greeting = "Hello, world!";
-        void method() {
-            if (size >= 10 && flag) {
-                return;
-            } else {
-                flag = true;
-            }
+        private float nota = 4.5;
+        protected int [] numbers = new int[4];
+        bool isTrue = false;
+        string hola = "hola";
+        public void sumar(int x, int y){
+            return x+y;
+        }
 
-            while (size > 0) {
-                size--;
+        public void recorrer(){
+            while(true){
+                if(numbers.size == 4){
+                    break;
+                }else continue;
             }
         }
     }

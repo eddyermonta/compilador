@@ -1,27 +1,22 @@
-program ::= decl+  // Un programa consiste en una o más declaraciones
+program ::= class_decl+  // Un programa consiste en una o más declaraciones
 
-decl ::= var_decl                  // Declaración de variables
-       | func_decl                 // Declaración de funciones
-       | class_decl                // Declaración de clases
+class_access ::= 'public class'
+                |'class'
 
-class_decl ::= 'class' class_name '{' class_body '}'  // Definición de una clase
+class_decl ::= class_access class_name '{' class_body '}'  // Definición de una clase
 
-class_name ::= IDENT  // Nombre de la clase
+IDENT ::= [a-zA-Z_][a-zA-Z0-9_]*  // Identificadores
 
-class_body ::= (var_decl | func_decl | access_specifier)* 
-    // Cuerpo de la clase que puede incluir variables, funciones, y especificadores de acceso
+class_name ::= IDENT
 
-access_specifier ::= 'public' 
-                  | 'private' 
-                  | 'protected'  
-    // Especificador de acceso: público, privado o protegido
+class_body ::= (var_decl | func_decl)*
 
-this_assign_stmt ::= 'this' '.' IDENT '=' IDENT ';'  
-    // Asignación en el constructor usando `this` para referirse al objeto actual
+access_specifier ::= 'public'
+                | 'private'
+                | 'protected'
 
-var_decl ::= type_spec IDENT ';'  
-           | type_spec IDENT '[' ']' ';'  
-    // Declaraciones de variables con tipos básicos y arreglos
+var_decl ::= access_specifier? type_spec IDENT ';'
+        | access_specifier? type_spec IDENT '[' ']' ';'
 
 type_spec ::= 'void'           // Tipo vacío, sin valor
             | 'bool'           // Tipo booleano (true o false)
@@ -30,7 +25,7 @@ type_spec ::= 'void'           // Tipo vacío, sin valor
             | 'string'         // Tipo cadena (de caracteres)
             | IDENT             // Para tipos definidos por el usuario (clases, structs)
 
-func_decl ::= type_spec IDENT '(' params ')' compound_stmt  
+func_decl ::= access_specifier type_spec IDENT '(' params ')' compound_stmt
     // Declaración de funciones con tipo de retorno, nombre, parámetros, y cuerpo
 
 params ::= param_list        // Lista de parámetros
@@ -38,18 +33,15 @@ params ::= param_list        // Lista de parámetros
 
 param_list ::= param (',' param)*  // Lista de parámetros separados por comas
 
-param ::= type_spec IDENT  
-       | type_spec IDENT '[' ']'  
-    // Declaración de parámetros, que pueden ser tipos básicos con o sin arreglos
+param ::= type_spec IDENT
+    | type_spec IDENT '[' ']'
 
-compound_stmt ::= '{' local_decls stmt_list '}'  
-    // Declaración compuesta que contiene declaraciones locales y lista de sentencias
+compound_stmt ::= '{' local_decls stmt_list '}'
 
 local_decls ::= local_decl*  // Declaraciones locales dentro de un bloque de código
 
-local_decl ::= type_spec IDENT ';'  
-            | type_spec IDENT '[' ']' ';'  
-    // Declaraciones locales de variables con tipos básicos y estructuras de arreglo
+local_decl ::= type_spec IDENT ';'
+            | type_spec IDENT '[' ']' ';'
 
 stmt_list ::= stmt*  // Lista de sentencias dentro de un bloque de código
 
@@ -62,17 +54,10 @@ stmt ::= expr_stmt         // Sentencia de expresión
 
 expr_stmt ::= expr? ';'  // Sentencia de expresión opcionalmente seguida de un punto y coma
 
-if_stmt ::= 'if' '(' expr ')' stmt ('else' stmt)?  
-    // Sentencia condicional if, opcionalmente seguida de una cláusula else
-
-while_stmt ::= 'while' '(' expr ')' stmt  
-    // Sentencia de bucle while
-
-return_stmt ::= 'return' expr? ';'  
-    // Sentencia de retorno que opcionalmente incluye una expresión
-
-break_stmt ::= ('break' | 'continue') ';'  
-    // Sentencia de interrupción del bucle o de continuación al siguiente ciclo
+if_stmt ::= 'if' '(' expr ')' stmt ('else' stmt)?
+while_stmt ::= 'while' '(' expr ')' stmt
+return_stmt ::= 'return' expr? ';'
+break_stmt ::= ('break' | 'continue') ';'
 
 expr ::= IDENT '=' expr
     | IDENT '[' expr ']' '=' expr
@@ -94,10 +79,10 @@ expr ::= IDENT '=' expr
     | INT_LIT
     | FLOAT_LIT
     | 'new' type_spec '[' expr ']'
-    // Expresiones que incluyen asignación, operaciones aritméticas y lógicas, llamadas a funciones, etc.
 
+this_assign_stmt ::= 'this' '.' IDENT '=' IDENT ';'
+    // Asignación en el constructor usando `this` para referirse al objeto actual
 args ::= arg_list?  // Lista de argumentos para llamadas a funciones, opcionalmente vacía
-
 arg_list ::= expr (',' expr)*  // Lista de argumentos separados por comas
 
-IDENT ::= [a-zA-Z_][a-zA-Z0-9_]*  // Identificadores
+
