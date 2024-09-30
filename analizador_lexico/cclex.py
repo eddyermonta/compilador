@@ -10,22 +10,30 @@ class MyLexer(Lexer):
         # Sentencias de control
         'IF', 'WHILE', 'ELSE', 'NEW',
         # Tipos de datos
-        'VOID', 'BOOL', 'INT', 'FLOAT',
+        'VOID', 'BOOL', 'INT', 'FLOAT', 'STRING',
         # Operadores relacionales y lógicos
         'AND', 'OR', 'EQ', 'NE', 'LE', 'GE','GT','LT',
         # Identificadores y literales
-        'IDENT', 'BOOL_LIT', 'INT_LIT', 'FLOAT_LIT', 'STRING_LIT',
+        'IDENT', 'BOOL_LIT', 'INT_LIT', 'FLOAT_LIT',
+        'STRING_LIT',
         # Palabras reservadas
         'THIS', 'SIZE'
     }
 
     # Símbolos y operadores
-    literals = {';', '[', ']', '{', '}', '+', '-', '*', '/', '%', '(', ')', '.', '=', ':','>','<',','}
+    literals = {
+                ';', '[', ']', '{', '}',
+                '+', '-', '*', '/', '%',
+                '(', ')', '.', '=', ':',
+                '>','<',','
+                }
 
     # Ignorar espacios y tabs
     ignore = ' \t'
     # Ignorar saltos de línea
-    ignore_newline = r'\n+'
+    @_(r'\n+')
+    def ignore_newline(self, t):
+        self.lineno += t.value.count('\n')
     # Ignorar comentarios (// comentario)
     ignore_cpp_comments = r'//.*'
     # Ignorar comentarios estilo (/* comentario */)
@@ -50,6 +58,7 @@ class MyLexer(Lexer):
         'bool': 'BOOL',
         'int': 'INT',
         'float': 'FLOAT',
+        'string': 'STRING',
         'return': 'RETURN',
         'break': 'BREAK',
         'continue': 'CONTINUE',
@@ -99,8 +108,9 @@ class MyLexer(Lexer):
 
     # Manejo de caracteres ilegales
     def t_error(self, t):
-        print(f"Carácter ilegal '{t.value[0]}' en la línea {t.lineno}")
+        print(f"Carácter ilegal '{t.value[0]}' en la línea {t.lineno}, columna {self.index}")
         self.index += 1
+
 
 if __name__ == '__main__':
     from rich.table   import Table
