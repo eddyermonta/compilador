@@ -9,7 +9,7 @@ class Token:
   lineno: int = 1
 
 class Lexer:
-  tokens = [ 
+  tokens = [
       (r'\s+', None),
       (r'\d+(\.\d+)?(E[-+]?\d+)?', lambda s,tok:Token('NUMBER', tok)),
       (r'[a-zA-Z_]\w*',            lambda s,tok:Token('IDENT', tok)),

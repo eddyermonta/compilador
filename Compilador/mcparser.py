@@ -1,4 +1,3 @@
-
 # mcparser.py
 '''
 Analizador Sintáctico
@@ -10,9 +9,8 @@ EBNF
 
 '''
 from rich import print
-
 from mclex import Lexer
-
+from mcast import *  # Import only the needed names
 import sly
 
 class Parser(sly.Parser):
@@ -21,17 +19,17 @@ class Parser(sly.Parser):
     tokens = Lexer.tokens
 
     precedence = (
+        ('nonassoc', 'IFX'),
+        ('nonassoc', 'ELSE'),
         ('right', '='),
-        ('left', OR),
-        ('left', AND),
-        ('left', EQ, NE),
-        ('left', '<', LE, '>', GE),
+        ('left', 'OR'),
+        ('left', 'AND'),
+        ('left', 'EQ', 'NE'),
+        ('left', '<', 'LE', '>', 'GE'),
         ('left', '+', '-'),
         ('left', '*', '/', '%'),
-        ('right', '!', UNARY),
-        ('right', 'ELSE'),  # ELSE tiene mayor precedencia
-        ('nonassoc', 'LOWER_IF'),  # Menor precedencia para IF sin ELSE
-    )
+        ('right', '!', 'UNARY'),
+        )
 
     # Definición de Reglas
 
@@ -40,9 +38,8 @@ class Parser(sly.Parser):
         '''
         program ::= decl+
         '''
-    
-    @_("var_decl", 
-       "func_decl")
+
+    @_("var_decl", "func_decl")
     def decl(self, p):
         '''
         decl ::= var_decl | func_decl | class_decl
@@ -59,11 +56,11 @@ class Parser(sly.Parser):
         '''
         var_decl ::= type_spec 'IDENT' '[' ']' ';'
         '''
-    
-    @_("VOID", 
-       "BOOL", 
-       "INT", 
-       "FLOAT")
+
+    @_("VOID",
+    "BOOL",
+    "INT",
+    "FLOAT")
     def type_spec(self, p):
         '''
         type_spec ::= 'VOID' | 'BOOL' | 'INT' | 'FLOAT'
@@ -141,11 +138,11 @@ class Parser(sly.Parser):
         '''
 
     @_("expr_stmt",
-       "compound_stmt",
-       "if_stmt",
-       "while_stmt",
-       "return_stmt",
-       "break_stmt")
+    "compound_stmt",
+    "if_stmt",
+    "while_stmt",
+    "return_stmt",
+    "break_stmt")
     def stmt(self, p):
         '''
         stmt ::= expr_stmt | compound_stmt | if_stmt | while_stmt | return_stmt | break_stmt
@@ -156,14 +153,14 @@ class Parser(sly.Parser):
         '''
         expr_stmt ::= expr? ';'
         '''
-    
+
     @_("IF '(' expr ')' stmt ELSE stmt")
     def if_stmt(self, p):
         '''
         if_stmt ::= 'IF' '(' expr ')' stmt 'ELSE' stmt
         '''
 
-    @_("IF '(' expr ')' stmt %prec LOWER_IF")
+    @_("IF '(' expr ')' stmt %prec IFX")
     def if_stmt(self, p):
         '''
         if_stmt ::= 'IF' '(' expr ')' stmt
@@ -182,75 +179,96 @@ class Parser(sly.Parser):
         '''
 
     @_("BREAK ';'",
-       "CONTINUE ';'")
+    "CONTINUE ';'")
     def break_stmt(self, p):
         '''
         break_stmt ::= ('BREAK' | 'CONTINUE') ';'
         '''
 
-    @_("IDENT '=' expr",
-       "IDENT '[' expr ']' '=' expr")
+    @_("IDENT '=' expr")
     def expr(self, p):
         '''
-        expr ::= 'IDENT' '=' expr | 'IDENT' '[' expr ']' '=' expr
+        expr ::= 'IDENT' '=' expr
         '''
+        return VarAssignmentExpr(p.IDENT, p.expr)
+
+    @_("IDENT '[' expr ']' '=' expr")
+    def expr(self, p):
+        '''
+        'IDENT' '[' expr ']' '=' expr
+        '''
+        return ArrayAssignmentExpr(p.IDENT, p.expr0, p.expr1)
 
     @_("expr OR  expr",
-       "expr AND expr",
-       "expr EQ  expr",
-       "expr NE  expr",
-       "expr GE  expr",
-       "expr LE  expr",
-       "expr '<' expr",
-       "expr '>' expr",
-       "expr '+' expr",
-       "expr '-' expr",
-       "expr '*' expr",
-       "expr '/' expr",
-       "expr '%' expr")
+    "expr AND expr",
+    "expr EQ  expr",
+    "expr NE  expr",
+    "expr GE  expr",
+    "expr LE  expr",
+    "expr '<' expr",
+    "expr '>' expr",
+    "expr '+' expr",
+    "expr '-' expr",
+    "expr '*' expr",
+    "expr '/' expr",
+    "expr '%' expr")
     def expr(self, p):
-        pass
+        return BinaryOpExpr(p[0], p.expr0, p.expr1)
 
     @_("'!' expr",
-       "'-' expr %prec UNARY",
-       "'+' expr %prec UNARY")
+    "'-' expr %prec UNARY",
+    "'+' expr %prec UNARY")
     def expr(self, p):
-        pass
+       return UnaryOpExpr(p[0], p.expr)
 
 
     @_("'(' expr ')'")
     def expr(self, p):
+        # This method is intentionally left empty because it serves as a placeholder
+        # for the various expression parsing rules defined above.
         pass
 
-    @_("IDENT",
-       "IDENT '[' expr ']'",
-       "IDENT '(' args ')'",
-       "IDENT '.' SIZE")
+    @_("IDENT")
     def expr(self, p):
-        pass
+        return VarExpr(p.IDENT)
+
+    @_("IDENT '[' expr ']'")
+    def expr(self, p):
+        return ArrayLoockupExpr(p.ident, p.expr)
+
+    @_("IDENT '(' args ')'")
+    def expr(self, p):
+        return CallExpr(p.IDENT, p.args)
+
+    @_("IDENT '.' SIZE")
+    def expr(self, p):
+        return ArraySizeExpr(p.IDENT)
 
     @_("BOOL_LIT",
-       "INT_LIT",
-       "FLOAT_LIT",
-       "STRING")
+    "INT_LIT",
+    "FLOAT_LIT",
+    "STRING")
     def expr(self, p):
-        pass
+        return ConstExpr(p[0])
 
     @_("NEW type_spec '[' expr ']'")
     def expr(self, p):
-        pass
+        return NewArrayExpr(p.type_spec, p.expr)
 
-    @_("arg_list", "empty")
+    @_("arg_list")
     def args(self, p):
-        pass
-        return p[0]
+         return p.arg_list
+    
+    @_("empty")
+    def args(self, p):
+        return [ ]
 
     @_("arg_list ',' expr")
     def arg_list(self, p):
         '''
         arg_list ::= arg_list ',' expr
         '''
-        return p.arg_list + [p.expr]
+        return p.arg_list + [ p.expr ]
 
     @_("expr")
     def arg_list(self, p):

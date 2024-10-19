@@ -12,14 +12,14 @@ class Lexer(sly.Lexer):
 
     tokens = {
         # palabras reservadas
-        VOID, BOOL, INT, FLOAT, IF, ELSE, WHILE, RETURN,
-        BREAK, CONTINUE, SIZE, NEW,
+        'VOID', 'BOOL', 'INT', 'FLOAT', 'IF', 'ELSE', 'WHILE', 'RETURN',
+        'BREAK', 'CONTINUE', 'SIZE', 'NEW',
 
         # Operadores de Relacion
-        AND, OR, EQ, NE, GE, LE,
+        'AND', 'OR', 'EQ', 'NE', 'GE', 'LE',
 
         # Otros Simbolos
-        IDENT, BOOL_LIT, INT_LIT, FLOAT_LIT, STRING,
+        'IDENT', 'BOOL_LIT', 'INT_LIT', 'FLOAT_LIT', 'STRING',
 
     }
     literals = '+-*/%=().,;{}[]<>!'
@@ -55,20 +55,20 @@ class Lexer(sly.Lexer):
     IDENT = r'[a-zA-Z_][a-zA-Z0-9_]*'
 
     # Casos Especiales (Palabras reservadas)
-    IDENT['break']    = BREAK
-    IDENT['continue'] = CONTINUE
-    IDENT['void']     = VOID
-    IDENT['bool']     = BOOL 
-    IDENT['int']      = INT 
-    IDENT['float']    = FLOAT
-    IDENT['if']       = IF
-    IDENT['else']     = ELSE 
-    IDENT['while']    = WHILE
-    IDENT['return']   = RETURN
-    IDENT['size']     = SIZE
-    IDENT['new']      = NEW
-    IDENT['true']     = BOOL_LIT
-    IDENT['false']    = BOOL_LIT
+    IDENT['break']    = 'BREAK'
+    IDENT['continue'] = 'CONTINUE'
+    IDENT['void']     = 'VOID'
+    IDENT['bool']     = 'BOOL'
+    IDENT['int']      = 'INT'
+    IDENT['float']    = 'FLOAT'
+    IDENT['if']       = 'IF'
+    IDENT['else']     = 'ELSE'
+    IDENT['while']    = 'WHILE'
+    IDENT['return']   = 'RETURN'
+    IDENT['size']     = 'SIZE'
+    IDENT['new']      = 'NEW'
+    IDENT['true']     = 'BOOL_LIT'
+    IDENT['false']    = 'BOOL_LIT'
 
     @_(r'((0(?!\d))|([1-9]\d*))((\.\d+(e[-+]?\d+)?)|([eE][-+]?\d+))')
     def FLOAT_LIT(self, t):
@@ -115,16 +115,10 @@ def print_lexer(source):
     for tok in lex.tokenize(source):
         value = tok.value if isinstance(tok.value, str) else str(tok.value)
         table.add_row(tok.type, value, str(tok.lineno))
-    
+
     console = Console()
     console.print(table)
 
 if __name__ == '__main__':
     import sys
-
-    '''
-    if len(sys.argv) != 2:
-        print(f"Usage mclex.py textfile")
-        exit(1)
-    '''
     print_lexer(open(sys.argv[1], encoding='utf-8').read())
