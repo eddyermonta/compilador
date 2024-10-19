@@ -37,8 +37,8 @@ Rule 33    stmt -> compound_stmt
 Rule 34    stmt -> expr_stmt
 Rule 35    expr_stmt -> ;
 Rule 36    expr_stmt -> expr ;
-Rule 37    if_stmt -> IF ( expr ) stmt  [precedence=nonassoc, level=10]
-Rule 38    if_stmt -> IF ( expr ) stmt ELSE stmt  [precedence=right, level=9]
+Rule 37    if_stmt -> IF ( expr ) stmt  [precedence=nonassoc, level=1]
+Rule 38    if_stmt -> IF ( expr ) stmt ELSE stmt  [precedence=nonassoc, level=2]
 Rule 39    while_stmt -> WHILE ( expr ) stmt
 Rule 40    return_stmt -> RETURN _2_expr_optional ;
 Rule 41    _2_expr_optional -> expr
@@ -55,24 +55,24 @@ Rule 51    expr -> IDENT ( args )
 Rule 52    expr -> IDENT [ expr ]
 Rule 53    expr -> IDENT
 Rule 54    expr -> ( expr )
-Rule 55    expr -> + expr  [precedence=right, level=8]
-Rule 56    expr -> - expr  [precedence=right, level=8]
-Rule 57    expr -> ! expr  [precedence=right, level=8]
-Rule 58    expr -> expr % expr  [precedence=left, level=7]
-Rule 59    expr -> expr / expr  [precedence=left, level=7]
-Rule 60    expr -> expr * expr  [precedence=left, level=7]
-Rule 61    expr -> expr - expr  [precedence=left, level=6]
-Rule 62    expr -> expr + expr  [precedence=left, level=6]
-Rule 63    expr -> expr > expr  [precedence=left, level=5]
-Rule 64    expr -> expr < expr  [precedence=left, level=5]
-Rule 65    expr -> expr LE expr  [precedence=left, level=5]
-Rule 66    expr -> expr GE expr  [precedence=left, level=5]
-Rule 67    expr -> expr NE expr  [precedence=left, level=4]
-Rule 68    expr -> expr EQ expr  [precedence=left, level=4]
-Rule 69    expr -> expr AND expr  [precedence=left, level=3]
-Rule 70    expr -> expr OR expr  [precedence=left, level=2]
-Rule 71    expr -> IDENT [ expr ] = expr  [precedence=right, level=1]
-Rule 72    expr -> IDENT = expr  [precedence=right, level=1]
+Rule 55    expr -> + expr  [precedence=right, level=10]
+Rule 56    expr -> - expr  [precedence=right, level=10]
+Rule 57    expr -> ! expr  [precedence=right, level=10]
+Rule 58    expr -> expr % expr  [precedence=left, level=9]
+Rule 59    expr -> expr / expr  [precedence=left, level=9]
+Rule 60    expr -> expr * expr  [precedence=left, level=9]
+Rule 61    expr -> expr - expr  [precedence=left, level=8]
+Rule 62    expr -> expr + expr  [precedence=left, level=8]
+Rule 63    expr -> expr > expr  [precedence=left, level=7]
+Rule 64    expr -> expr < expr  [precedence=left, level=7]
+Rule 65    expr -> expr LE expr  [precedence=left, level=7]
+Rule 66    expr -> expr GE expr  [precedence=left, level=7]
+Rule 67    expr -> expr NE expr  [precedence=left, level=6]
+Rule 68    expr -> expr EQ expr  [precedence=left, level=6]
+Rule 69    expr -> expr AND expr  [precedence=left, level=5]
+Rule 70    expr -> expr OR expr  [precedence=left, level=4]
+Rule 71    expr -> IDENT [ expr ] = expr  [precedence=right, level=3]
+Rule 72    expr -> IDENT = expr  [precedence=right, level=3]
 Rule 73    args -> empty
 Rule 74    args -> arg_list
 Rule 75    arg_list -> expr
@@ -3670,7 +3670,7 @@ state 132
     +               reduce using rule 37 (if_stmt -> IF ( expr ) stmt .)
     -               reduce using rule 37 (if_stmt -> IF ( expr ) stmt .)
     !               reduce using rule 37 (if_stmt -> IF ( expr ) stmt .)
-    ELSE            reduce using rule 37 (if_stmt -> IF ( expr ) stmt .)
+    ELSE            shift and go to state 136
 
 
 state 133

@@ -2,13 +2,9 @@
 '''
 Estructura del AST (básica). 
 
-Debe agregar las clases que considere que hacen falta.
 
 Statement
-+--- NullStmt|
-+--- ExprStmt|
-+--- IfStmt|
-+--- WhileStmt|
+
 +--- ReturnStmt|
 +--- BreakStmt|
 +--- FuncDeclStmt|
@@ -72,7 +68,81 @@ class Expression(Node):
 # =====================================================================
 @dataclass
 class NullStmt(Statement):
+    """
+    Representa una sentencia vacía o una transición nula.
+    Utilizada en casos donde no hay cuerpo de sentencia.
+    """
     pass
+
+@dataclass
+class ExprStmt(Statement):
+    """
+    Representa una declaración de expresión.
+    """
+    expr: Expression
+
+@dataclass
+class IfStmt(Statement):
+    """
+    Representa una sentencia 'if'.
+    """
+    condition: Expression
+    then_stmt: Statement
+    else_stmt: Statement = None
+
+@dataclass
+class WhileStmt(Statement):
+    """
+    Representa un bucle 'while'.
+    """
+    condition: Expression
+    body: Statement
+
+@dataclass
+class ReturnStmt(Statement):
+    """
+    Representa una sentencia 'return'.
+    """
+    expr: Expression = None
+
+@dataclass
+class BreakStmt(Statement):
+    """
+    Representa una sentencia 'break'.
+    """
+    pass
+
+@dataclass
+class FuncDeclStmt(Statement):
+    name: str                    # El nombre de la función
+    params: List[str]            # Lista de nombres de parámetros
+    body: Statement              # El cuerpo de la función
+    return_type: str             # El tipo de retorno de la función
+
+@dataclass
+class StaticVarDeclStmt(Statement):
+    name: str        # El nombre de la variable
+    type: str        # El tipo de la variable
+    initial_value: Expression  # El valor inicial de la variable
+
+@dataclass
+class VarDeclStmt(Statement):
+    type_spec: str  # o puedes usar un tipo específico si lo has definido
+    ident: str
+    is_array: bool = False  # Default is False for non-array declarations
+
+@dataclass
+class CompoundStmt(Statement):
+    local_decls: List[VarDeclStmt]  # List of local declarations
+    stmt_list: List[Statement]        # List of statements
+
+from dataclasses import dataclass
+
+@dataclass
+class Param:
+    type_spec: str  # Type of the parameter (e.g., 'INT', 'FLOAT', etc.)
+    ident: str      # Identifier of the parameter
+    is_array: bool  # Indicates if the parameter is an array
 
 @dataclass
 class NewArrayExpr(Expression):
@@ -113,7 +183,7 @@ class VarExpr(Expression):
     ident : str
 
 @dataclass
-class ArrayLoockupExpr(Expression):
+class ArrayLookupExpr(Expression):
     ident: str
     expr : Expression
 
@@ -131,3 +201,10 @@ class ArrayAssignmentExpr(Expression):
     ident : str
     index : Expression
     expr  : Expression
+
+@dataclass
+class IntToFloatExpr(Expression):
+    """
+    Representa la conversión de un entero a un flotante.
+    """
+    expr: Expression

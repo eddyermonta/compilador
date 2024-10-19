@@ -38,24 +38,28 @@ class Parser(sly.Parser):
         '''
         program ::= decl+
         '''
+        return [decl for decl in (p.decl0,) + p.decl1]
 
     @_("var_decl", "func_decl")
     def decl(self, p):
         '''
-        decl ::= var_decl | func_decl | class_decl
+        decl ::= var_decl | func_decl
         '''
+        return p[0] + p.decl1
 
     @_("type_spec IDENT ';'")
     def var_decl(self, p):
         '''
         var_decl ::= type_spec 'IDENT' ';'
         '''
+        return VarDeclStmt(p.type_spec, p.IDENT, is_array=False)  # Retorna una instancia de VarDeclStmt
 
     @_("type_spec IDENT '[' ']' ';'")
     def var_decl(self, p):
         '''
         var_decl ::= type_spec 'IDENT' '[' ']' ';'
         '''
+        return VarDeclStmt(p.type_spec, p.IDENT, is_array=True)  # Retorna una instancia de VarDeclStmt
 
     @_("VOID",
     "BOOL",
@@ -65,77 +69,98 @@ class Parser(sly.Parser):
         '''
         type_spec ::= 'VOID' | 'BOOL' | 'INT' | 'FLOAT'
         '''
+        return p[0]
 
     @_("type_spec IDENT '(' params ')' compound_stmt")
     def func_decl(self, p):
         '''
         func_decl ::= type_spec 'IDENT' '(' params ')' compound_stmt
         '''
+        return FuncDeclStmt(
+        name=p.IDENT,
+        params=p.params,  # This should be a list of Param objects
+        body=p.compound_stmt,
+        return_type=p.type_spec  # Return type is derived from type_spec
+    )
 
     @_("param_list", "VOID")
     def params(self, p):
         '''
         params ::= param_list | 'VOID'
         '''
+        if p[0] == 'VOID':
+            return [ ] # Si no hay parametros retorna una lista vacia
+        return p.param_list # Devuelve la lista de parametros
 
     @_("param_list ',' param")
     def param_list(self, p):
         '''
         param_list ::= param_list ',' param
         '''
+        return p.param_list + [p.param] # Devuelve la lista de parametros
 
     @_("param")
     def param_list(self, p):
         '''
         param_list ::= param
         '''
+        return [p.param] # Devuelve la lista de parametros
 
     @_("type_spec IDENT")
     def param(self, p):
         '''
         param ::=  type_spec 'IDENT'
         '''
+        return Param(p.type_spec, p.IDENT, is_array=False) # Retorna una instancia de Param
+
     @_("type_spec IDENT '[' ']'")
     def param(self, p):
         '''
         param ::= type_spec 'IDENT' '[' ']'
         '''
+        return Param(p.type_spec, p.IDENT, is_array=True) # Retorna una instancia de Param
 
     @_("'{' local_decls stmt_list '}'")
     def compound_stmt(self, p):
         '''
         compound_stmt ::= '{' local_decls stmt_list '}'
         '''
+        return CompoundStmt(p.local_decls, p.stmt_list)
 
     @_("local_decl decl", "empty")
     def local_decls(self, p):
         '''
         local_decls ::= local_decls decl
         '''
+        return p.local_decls + [p.decl] if p.local_decls else [p.decl]
 
     @_("type_spec IDENT ';'")
     def local_decl(self, p):
         '''
         local_decl ::= type_spec 'IDENT' ';'
         '''
+        return VarDeclStmt(p.type_spec, p.IDENT, is_array=False)  # Retorna una instancia de VarDeclStmt
 
     @_("type_spec IDENT '[' ']' ';'")
     def local_decl(self, p):
         '''
         local_decl ::= type_spec 'IDENT' ';'
         '''
+        return VarDeclStmt(p.type_spec, p.IDENT, is_array=True)  # Retorna una instancia de VarDeclStmt
 
     @_("stmt_list stmt")
     def stmt_list(self, p):
         '''
         stmt_list ::= stmt_list stmt
         '''
+        return p.stmt_list + [p.stmt] # Devuelve una lista con la sentencia
 
     @_("stmt")
     def stmt_list(self, p):
         '''
         stmt_list ::= stmt
         '''
+        return [p.stmt] # Devuelve una lista con la sentencia
 
     @_("expr_stmt",
     "compound_stmt",
@@ -147,36 +172,45 @@ class Parser(sly.Parser):
         '''
         stmt ::= expr_stmt | compound_stmt | if_stmt | while_stmt | return_stmt | break_stmt
         '''
+        return p[0]
 
     @_("expr ';'", "';'")
     def expr_stmt(self, p):
         '''
         expr_stmt ::= expr? ';'
         '''
+        if len(p) == 2:  # Si hay una expresión
+            return ExprStmt(p.expr)
+        else:  # Si es solo ';'
+            return NullStmt()
 
     @_("IF '(' expr ')' stmt ELSE stmt")
     def if_stmt(self, p):
         '''
         if_stmt ::= 'IF' '(' expr ')' stmt 'ELSE' stmt
         '''
+        return IfStmt(p.expr, p.stmt0, p.stmt1)
 
     @_("IF '(' expr ')' stmt %prec IFX")
     def if_stmt(self, p):
         '''
         if_stmt ::= 'IF' '(' expr ')' stmt
         '''
+        return IfStmt(p.expr, p.stmt0, None)
 
     @_("WHILE '(' expr ')' stmt")
     def while_stmt(self, p):
         '''
         while_stmt ::= 'WHILE' '(' expr ')' stmt
         '''
+        return WhileStmt(p.expr, p.stmt)
 
     @_("RETURN [ expr ] ';'")
     def return_stmt(self, p):
         '''
         return_stmt ::= 'RETURN' expr? ';'
         '''
+        return ReturnStmt(p.expr)
 
     @_("BREAK ';'",
     "CONTINUE ';'")
@@ -184,6 +218,7 @@ class Parser(sly.Parser):
         '''
         break_stmt ::= ('BREAK' | 'CONTINUE') ';'
         '''
+        return BreakStmt()
 
     @_("IDENT '=' expr")
     def expr(self, p):
@@ -224,9 +259,7 @@ class Parser(sly.Parser):
 
     @_("'(' expr ')'")
     def expr(self, p):
-        # This method is intentionally left empty because it serves as a placeholder
-        # for the various expression parsing rules defined above.
-        pass
+        return p.expr # Devuelve el valor de la expresion contenida en los parentesis
 
     @_("IDENT")
     def expr(self, p):
@@ -234,7 +267,7 @@ class Parser(sly.Parser):
 
     @_("IDENT '[' expr ']'")
     def expr(self, p):
-        return ArrayLoockupExpr(p.ident, p.expr)
+        return ArrayLookupExpr(p.ident, p.expr)
 
     @_("IDENT '(' args ')'")
     def expr(self, p):
@@ -257,8 +290,8 @@ class Parser(sly.Parser):
 
     @_("arg_list")
     def args(self, p):
-         return p.arg_list
-    
+        return p.arg_list
+
     @_("empty")
     def args(self, p):
         return [ ]
