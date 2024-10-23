@@ -88,13 +88,21 @@ class Lexer(sly.Lexer):
     def malformed_inumber(self, t):
         print(f"{self.lineno}: Literal entera '{t.value}' no sportado")
 
-    @_(r'"[^\n]*?(?<!\\)"')
+    @_(r'"(\\.|[^"\\])*"')  # Captura cadenas que pueden tener caracteres de escape
     def STRING(self, t):
-        tstr = t.value.replace(r'\\', '')
-        m = re.search(r'\\[^\n]', tstr)
-        if m:
-            print(f"{self.lineno}: Caracter de escape '{m.group(0)}' no soportado")
+        # Eliminar las comillas de la cadena
+        tstr = t.value[1:-1]
+
+        # Reemplazar caracteres de escape
+        tstr = tstr.encode('utf-8').decode('unicode_escape')
+
+        # Verificar caracteres de escape no soportados
+        unsupported = re.search(r'\\[^\'"\\n]', tstr)
+        if unsupported:
+            print(f"{self.lineno}: Caracter de escape '{unsupported.group(0)}' no soportado")
             return
+
+        t.value = tstr  # Asigna el valor limpio
         return t
 
     def error(self, t):
