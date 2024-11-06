@@ -1,6 +1,6 @@
 // Draw a nice Mandelbrot set!
 
-float xmin = -2.0;
+float xmin;
 float xmax;
 float ymin;
 float ymax;
@@ -50,10 +50,10 @@ void mandel(void) {
       } else {
         printf(".");
       }
-      x += dx;
+      x = x + dx;
     }
     printf("\n");
-    y -= dy;
+    y = y - dy;
          
   }
 }
@@ -67,8 +67,6 @@ void main(void) {
   height = 40.0;
   threshhold = 1000;
 
-  printf("Digite un Entero");
-  height = scanf();
   mandel();
 }
 

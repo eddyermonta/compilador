@@ -1,0 +1,119 @@
+digraph AST {
+        node [color=deepskyblue shape=box style=filled]      
+        edge [arrowhead=none]
+        n01 [label=AST]
+        n02 [label="VarDeclStmt(_type='int', ident='num')"]  
+        n01 -> n02
+        n03 [label="FuncDeclStmt\nname=isqrt (int)"]
+        n04 [label=CompoundStmt]
+        n05 [label="VarDeclStmt(_type='int', ident='guess')"]
+        n04 -> n05
+        n06 [label="VarDeclStmt(_type='int', ident='xprev')"]
+        n04 -> n06
+        n07 [label=IfStmt]
+        n08 [label="<" shape=circle]
+        n09 [label="VarExpr(ident='x')"]
+        n08 -> n09 [label=left]
+        n10 [label="ConstExpr(value=0)"]
+        n08 -> n10 [label=right]
+        n07 -> n08
+        n11 [label=ReturnStmt]
+        n12 [label="ConstExpr(value=0)"]
+        n11 -> n12
+        n07 -> n11 [label=Then]
+        n04 -> n07
+        n13 [label=ExprStmt]
+        n14 [label="=" shape=circle]
+        n15 [label="VarExpr(ident='guess')"]
+        n14 -> n15
+        n16 [label="/" shape=circle]
+        n17 [label="=" shape=circle]
+        n18 [label="VarExpr(ident='xprev')"]
+        n17 -> n18
+        n19 [label="VarExpr(ident='x')"]
+        n17 -> n19
+        n16 -> n17 [label=left]
+        n20 [label="ConstExpr(value=2)"]
+        n16 -> n20 [label=right]
+        n14 -> n16
+        n13 -> n14
+        n04 -> n13
+        n21 [label=WhileStmt]
+        n22 [label="!=" shape=circle]
+        n23 [label="VarExpr(ident='guess')"]
+        n22 -> n23 [label=left]
+        n24 [label="VarExpr(ident='xprev')"]
+        n22 -> n24 [label=right]
+        n21 -> n22
+        n25 [label=CompoundStmt]
+        n26 [label=ExprStmt]
+        n27 [label="=" shape=circle]
+        n28 [label="VarExpr(ident='xprev')"]
+        n27 -> n28
+        n29 [label="VarExpr(ident='guess')"]
+        n27 -> n29
+        n26 -> n27
+        n25 -> n26
+        n30 [label=ExprStmt]
+        n31 [label="=" shape=circle]
+        n32 [label="VarExpr(ident='guess')"]
+        n31 -> n32
+        n33 [label="/" shape=circle]
+        n34 [label="+" shape=circle]
+        n35 [label="VarExpr(ident='guess')"]
+        n34 -> n35 [label=left]
+        n36 [label="/" shape=circle]
+        n37 [label="VarExpr(ident='x')"]
+        n36 -> n37 [label=left]
+        n38 [label="VarExpr(ident='guess')"]
+        n36 -> n38 [label=right]
+        n34 -> n36 [label=right]
+        n33 -> n34 [label=left]
+        n39 [label="ConstExpr(value=2)"]
+        n33 -> n39 [label=right]
+        n31 -> n33
+        n30 -> n31
+        n25 -> n30
+        n21 -> n25
+        n04 -> n21
+        n40 [label=ReturnStmt]
+        n41 [label="VarExpr(ident='guess')"]
+        n40 -> n41
+        n04 -> n40
+        n03 -> n04
+        n01 -> n03
+        n42 [label="FuncDeclStmt\nname=main (void)"]
+        n43 [label=CompoundStmt]
+        n44 [label="VarDeclStmt(_type='int', ident='x')"]
+        n43 -> n44
+        n45 [label=ExprStmt]
+        n46 [label="=" shape=circle]
+        n47 [label="VarExpr(ident='num')"]
+        n46 -> n47
+        n48 [label="CallExpr\nname=iread"]
+        n46 -> n48
+        n45 -> n46
+        n43 -> n45
+        n49 [label=ExprStmt]
+        n50 [label="=" shape=circle]
+        n51 [label="VarExpr(ident='x')"]
+        n50 -> n51
+        n52 [label="CallExpr\nname=isqrt"]
+        n53 [label="VarExpr(ident='num')"]
+        n52 -> n53
+        n50 -> n52
+        n49 -> n50
+        n43 -> n49
+        n54 [label=ExprStmt]
+        n55 [label="CallExpr\nname=printf"]
+        n56 [label="ConstExpr(value='isqrt(%d) = %f')"]
+        n55 -> n56
+        n57 [label="VarExpr(ident='num')"]
+        n55 -> n57
+        n58 [label="VarExpr(ident='x')"]
+        n55 -> n58
+        n54 -> n55
+        n43 -> n54
+        n42 -> n43
+        n01 -> n42
+}
