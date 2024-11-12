@@ -56,5 +56,3 @@ class Context:
         else:
             print(f"{position}: {message}")
         self.have_errors = True
-#mcontext.py
-#Displaying mcontext.py.

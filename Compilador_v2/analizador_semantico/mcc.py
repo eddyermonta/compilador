@@ -124,5 +124,3 @@ if __name__ == '__main__':
 
     except EOFError:
       pass
-#mcc.py
-#Displaying mchecker.py.
