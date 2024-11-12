@@ -55,6 +55,17 @@ class ExprStmt(Statement):
     expr: Expression
 
 @dataclass
+class ForStmt(Statement):
+    """
+    Representa un ciclo 'for' en el programa.
+    """
+    init: Statement  # Inicialización (puede ser una declaración o una asignación)
+    condition: Expression  # Condición de salida (expresión booleana)
+    update: Expression  # Expresión de actualización (operación sobre la variable de control)
+    body: Statement  # El cuerpo del ciclo (puede ser una declaración o un bloque de instrucciones)
+
+
+@dataclass
 class IfStmt(Statement):
     """
     Representa una sentencia 'if'.
@@ -437,6 +448,32 @@ class DotRender(Visitor):
         expr_name = n.expr.accept(self)
         self.dot.edge(name, expr_name)
         return name
+    
+    def visit_for_stmt(self, n: ForStmt):
+        """
+        Genera el grafo para un ForStmt.
+        """
+        name = f"forstmt_{self.node_id}"
+        self.dot.node(name, label="ForStmt")  # Nodo principal para el ciclo 'for'
+        
+        # Visitar e incluir los subcomponentes: init, condition, update y body
+        init_name = n.init.accept(self)
+        condition_name = n.condition.accept(self)
+        update_name = n.update.accept(self)
+        body_name = n.body.accept(self)
+        
+        # Conectar los nodos para representar el flujo del ciclo for
+        self.dot.edge(name, init_name)  # Conexión inicial
+        self.dot.edge(name, condition_name)  # Conexión con la condición
+        self.dot.edge(name, update_name)  # Conexión con la actualización
+        self.dot.edge(name, body_name)  # Conexión con el cuerpo del ciclo
+        
+        # Conexiones entre los componentes del ciclo
+        self.dot.edge(condition_name, body_name)  # Si la condición es True, se ejecuta el cuerpo
+        self.dot.edge(body_name, update_name)  # Después de ejecutar el cuerpo, se actualiza
+        self.dot.edge(update_name, condition_name)  # Vuelve a verificar la condición
+        
+        return name  # Retorna el nombre del nodo principal 'ForStmt'
 
 # Ejemplo de uso:
 
