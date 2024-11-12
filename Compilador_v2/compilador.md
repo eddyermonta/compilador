@@ -35,20 +35,6 @@ en el cual se han implementado las siguientes etapas principales del proceso de 
 - **Extensibilidad**: El sistema puede ampliarse para incluir nuevas características, como la generación de código intermedio, optimización, etc.
 - **Errores de Compilación**: El sistema informa errores detallados sobre la sintaxis, semántica y uso de identificadores.
 
-### Instrucciones para ejecutar el proyecto
-
-1. **Instalar Dependencias**:
-   Asegúrate de tener instalados los módulos necesarios ejecutando:
-   ```
-   pip install -r requirements.txt
-   ```
-
-2. **Ejecutar el Compilador**:
-   Para ejecutar el compilador, utiliza el siguiente comando:
-   ```
-   python compilador.py
-   ```
-
 3. **Pruebas**:
    Se incluyen varios archivos de prueba en el directorio `tests/` para verificar que cada parte del compilador funcione correctamente.
 
