@@ -10,7 +10,13 @@ EBNF
 '''
 from rich import print
 from analizador_lexico.mclex import Lexer
-from .mcast import *  
+from .mcast import (
+    VarDeclStmt, FuncDeclStmt, Param, CompoundStmt, ExprStmt, NullStmt, IfStmt,
+    WhileStmt, ReturnStmt, BreakStmt, VarAssignmentExpr, ArrayAssignmentExpr,
+    BinaryOpExpr, UnaryOpExpr, VarExpr, ArrayLookupExpr, CallExpr,
+    ArraySizeExpr, ConstExpr, NewArrayExpr
+)
+
 import sly
 
 class Parser(sly.Parser):
