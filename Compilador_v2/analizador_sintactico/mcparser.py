@@ -14,7 +14,7 @@ from .mcast import (
     VarDeclStmt, FuncDeclStmt, Param, CompoundStmt, ExprStmt, NullStmt, IfStmt,
     WhileStmt, ReturnStmt, BreakStmt, VarAssignmentExpr, ArrayAssignmentExpr,
     BinaryOpExpr, UnaryOpExpr, VarExpr, ArrayLookupExpr, CallExpr,
-    ArraySizeExpr, ConstExpr, NewArrayExpr
+    ArraySizeExpr, ConstExpr, NewArrayExpr, ForStmt
 )
 
 import sly
@@ -210,6 +210,13 @@ class Parser(sly.Parser):
         while_stmt ::= 'WHILE' '(' expr ')' stmt
         '''
         return WhileStmt(p.expr, p.stmt)
+    
+    @_("FOR '(' expr_stmt expr ';' expr ')' stmt")
+    def for_stmt(self, p):
+        '''
+        for_stmt ::= 'FOR' '(' expr_stmt expr ';' expr ')' stmt
+        '''
+        return ForStmt(p.expr_stmt, p.expr0, p.expr1, p.stmt)
 
     @_("RETURN [ expr ] ';'")
     def return_stmt(self, p):

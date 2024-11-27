@@ -1,26 +1,18 @@
 import sys
-from analizador_lexico.mclex import Lexer  # Asegúrate de que esta ruta es correcta.
-from analizador_sintactico.mcparser import Parser  # Aquí importas tu parser que ya has definido.
+from analizador_semantico import SymbolTable, analyze_program, parse_program
 
-def run_parser(source_code):
-    # Inicializa el lexer
-    lexer = Lexer()
-    
-    # Realiza el análisis léxico (tokenización)
-    tokens = lexer.tokenize(source_code)
-    
-    # Imprimir los tokens generados para verificar que todo esté bien
-    print("Tokens generados:")
-    for token in tokens:
-        print(token)
-    
-    # Inicializa el parser y alimenta los tokens
-    parser = Parser()
+def main():
     try:
-        # Parsear el código fuente
-        ast = parser.parse(tokens)
-        print("AST generado exitosamente:")
-        # Aquí puedes imprimir el AST
-        print(ast)
+        # Parsear el programa para obtener el AST
+        ast = parse_program('program_file.txt')
+        symbol_table = SymbolTable()
+
+        # Analizar el programa y verificar errores semánticos
+        analyze_program(ast, symbol_table)
+    except FileNotFoundError:
+        print("Error: El archivo 'program_file.txt' no se encuentra.")
     except Exception as e:
-        print(f"Error de parseo: {e}")
+        print(f"Se produjo un error: {e}")
+
+if __name__ == "__main__":
+    main()
